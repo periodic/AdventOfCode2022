@@ -1,8 +1,16 @@
 module Main where
 
-import qualified MyLib (someFunc)
+import Data.Text qualified as Text
+
+import Day01 qualified
+import Exercise (Exercise (..))
+import Runner (runSolution)
+
+exercises :: [Exercise]
+exercises = [Day01.exercise]
 
 main :: IO ()
-main = do
-  putStrLn "Hello, Haskell!"
-  MyLib.someFunc
+main =
+  forM_ exercises $ \(Exercise{..}) -> do
+    putTextLn $ Text.intercalate " " exerciseName
+    runSolution exerciseSolution
