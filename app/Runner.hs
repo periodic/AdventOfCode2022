@@ -1,106 +1,55 @@
-module Runner (runSolution, runExercise, readInput, parseInput) where
+module Runner (SolutionResult (..), ParseResult (..), Timing (..), runSolution, readInput) where
 
-import Criterion (benchmark, whnfAppIO)
-import Data.Attoparsec.Text qualified as Attoparsec
+import Criterion (benchmarkWith', whnfAppIO)
+import Criterion.Main.Options (defaultConfig)
+import Criterion.Types (Config (..), Report, Verbosity (..))
+import Data.Attoparsec.Text (Parser, parseOnly)
 import Data.Text.IO (readFile)
-import Options.Applicative
-    ( help,
-      info,
-      long,
-      metavar,
-      short,
-      strArgument,
-      switch,
-      execParser,
-      Parser,
-      ParserInfo )
 import System.CPUTime (getCPUTime)
 import Text.Printf (printf)
 
-import Exercise ( Solution(..) )
+import Exercise (Solution (..))
 
-runSolution :: Solution a -> IO ()
-runSolution (Solution parser part1 part2) = do
-  input <- parseInput (parser <* Attoparsec.skipSpace <* Attoparsec.endOfInput)
-  answer1 <- runExercise "Part 1" part1 input
-  printf "Part 1: %d\n" answer1
-  answer2 <- runExercise "Part 2" part2 input
-  printf "Part 2: %d\n" answer2
+data Timing
+  = SimpleTiming Double -- Seconds
+  | DetailedTiming Report
 
--- TODO: Clean up this file.
-
-inputFileArg :: Parser String
-inputFileArg =
-  strArgument (metavar "INPUT_FILE")
-
-benchmarkArg :: Parser Bool
-benchmarkArg =
-  switch (long "benchmark" <> short 'b' <> help "Enable detailed benchmarking")
-
-argsParser :: Parser Arguments
-argsParser =
-  Arguments <$> inputFileArg <*> benchmarkArg
-
-argsInfo :: ParserInfo Arguments
-argsInfo =
-  info argsParser mempty
-
-data Arguments = Arguments
-  { inputFile :: String
-  , benchmarking :: Bool
+data SolutionResult = SolutionResult
+  { solutionOutput :: Int
+  , solutionTiming :: Timing
   }
-  deriving (Show)
 
-parseArgs :: IO Arguments
-parseArgs =
-  execParser argsInfo
+data ParseResult a = ParseResult
+  { parseOutput :: a
+  , parseTiming :: Timing
+  }
 
-readInput :: IO Text
-readInput = do
-  args <- parseArgs
-  Data.Text.IO.readFile . inputFile $ args
+runSolution :: Bool -> a -> Solution a -> IO SolutionResult
+runSolution detailed input Solution{..} = do
+  uncurry SolutionResult <$> time detailed (pure . solutionExec) input
 
-parseInput :: Attoparsec.Parser a -> IO a
-parseInput parser = do
-  printf "Parsing input...\n"
-  args <- parseArgs
-  contents <- readInput
-  time "Parsing" (doParsing parser) contents
+readInput :: Bool -> FilePath -> Parser a -> IO (ParseResult a)
+readInput detailed path parser = do
+  contents <- Data.Text.IO.readFile path
+  uncurry ParseResult <$> time detailed (doParsing parser) contents
 
-doParsing :: Attoparsec.Parser a -> Text -> IO a
+doParsing :: Parser a -> Text -> IO a
 doParsing parser contents =
-  case Attoparsec.parseOnly parser contents of
+  case parseOnly parser contents of
     Left err -> do
       printf "Failed to parse input: %s\n" err
       exitFailure
     Right input ->
       return input
 
-runExercise :: String -> (a -> b) -> a -> IO b
-runExercise name work input = do
-  printSeparator
-  printf "Running %s...\n" name
-  time name (return . work) input
-
-printTimeDiff :: Integer -> Integer -> IO ()
-printTimeDiff start end = do
+time :: Bool -> (a -> IO b) -> a -> IO (b, Timing)
+time True work input = do
+  timing <- benchmarkWith' (defaultConfig{verbosity = Quiet}) $ whnfAppIO work input
+  output <- work input
+  pure (output, DetailedTiming timing)
+time False work input = do
+  start <- getCPUTime
+  result <- work input
+  end <- result `seq` getCPUTime
   let diff = fromIntegral (end - start) / (10 ^ 9) :: Double
-  printf "Work took %0.3fms\n" diff
-
-printSeparator :: IO ()
-printSeparator =
-  putStrLn . replicate 80 $ '='
-
-time :: String -> (a -> IO b) -> a -> IO b
-time name work input = do
-  args <- parseArgs
-  if benchmarking args
-    then do
-      benchmark $ whnfAppIO work input
-      work input
-    else do
-      start <- getCPUTime
-      result <- work input
-      end <- result `seq` getCPUTime
-      printTimeDiff start end
-      return result
+  pure (result, SimpleTiming diff)
