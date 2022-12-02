@@ -41,6 +41,7 @@ library
   import:           warnings
   exposed-modules:
     Day01
+    Day02
     Exercise
 
   other-modules:

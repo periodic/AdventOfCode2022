@@ -14,18 +14,9 @@ exercise =
     { exerciseNum = 1
     , exerciseParser = parser
     , exerciseSolutions =
-        [ Solution
-            { solutionName = "Part 1"
-            , solutionExec = part1
-            }
-        , Solution
-            { solutionName = "Part 2 - Sorted"
-            , solutionExec = part2Simple
-            }
-        , Solution
-            { solutionName = "Part 2 - Selection"
-            , solutionExec = part2Selection
-            }
+        [ Solution "Part 1" part1
+        , Solution "Part 2 - Sorted" part2Simple
+        , Solution "Part 2 - Selection" part2Selection
         ]
     }
 

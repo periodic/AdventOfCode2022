@@ -1,5 +1,7 @@
 module Main where
 
+import Criterion.Types (Report (..), SampleAnalysis (..))
+import Data.Text qualified as Text
 import Options.Applicative (
   Parser,
   auto,
@@ -14,16 +16,16 @@ import Options.Applicative (
   strArgument,
   switch,
  )
+import Statistics.Types (Estimate (..))
 import Text.Printf (printf)
 
 import Day01 qualified
+import Day02 qualified
 import Exercise (Exercise (..), Solution (..))
 import Runner (ParseResult (ParseResult), SolutionResult (..), Timing (..), readInput, runSolution)
-import Statistics.Types (Estimate(..))
-import Criterion.Types (Report(..), SampleAnalysis (..))
 
 exercises :: [Exercise]
-exercises = [Day01.exercise]
+exercises = [Day01.exercise, Day02.exercise]
 
 data Filter = Filter
   { exerciseFilter :: Int
@@ -55,12 +57,23 @@ argsParser =
 main :: IO ()
 main = do
   Arguments{..} <- execParser (info argsParser mempty)
-  forM_ exercises $ \(Exercise{..}) -> do
+
+  let exercises' =
+        case filters of
+          Nothing -> exercises
+          Just (Filter{..}) -> filter ((== exerciseFilter) . exerciseNum) exercises
+
+  forM_ exercises' $ \(Exercise{..}) -> do
     printExercise exerciseNum
     ParseResult input parseTiming <- readInput benchmarking inputFile exerciseParser
     printParseResult parseTiming
 
-    forM_ exerciseSolutions $ \solution -> do
+    let solutions' =
+          case filters >>= solutionFilter of
+            Nothing -> exerciseSolutions
+            Just prefix -> filter ((prefix `Text.isPrefixOf`) . solutionName) exerciseSolutions
+
+    forM_ solutions' $ \solution -> do
       solutionResult <- runSolution benchmarking input solution
       printSolutionResult (solutionName solution) solutionResult
 
@@ -78,6 +91,6 @@ printSolutionResult solutionName SolutionResult{..} = do
 
 showTiming :: Timing -> Text
 showTiming (SimpleTiming seconds) = toText @String $ printf "time = %0.1fμs" (seconds * 1000)
-showTiming (DetailedTiming report) = 
-  let Report{ reportAnalysis = SampleAnalysis {anMean, anStdDev}} = report
-  in toText @String $ printf "mean = %0.1fμs, stdDev = %0.1fμs" (estPoint anMean * 1000000) (estPoint anStdDev * 1000000)
+showTiming (DetailedTiming report) =
+  let Report{reportAnalysis = SampleAnalysis{anMean, anStdDev}} = report
+   in toText @String $ printf "mean = %0.1fμs, stdDev = %0.1fμs" (estPoint anMean * 1000000) (estPoint anStdDev * 1000000)
