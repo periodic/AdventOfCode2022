@@ -25,15 +25,16 @@ parser =
 
 toPriority :: Char -> Int
 toPriority x
-  | isUpper x = ord x - 64 + 26
-  | isLower x = ord x - 96
+  | isLower x = ord x - 96 -- Remove 96 to one-index.
+  | isUpper x = ord x - 64 + 26 -- remove 64 to one-index, then add 26 for the second half.
   | otherwise = error $ "Got invalid bag item: " <> show x
 
 findShared :: [String] -> Char
 findShared bags =
   case foldr1 intersect bags of
     [] -> error $ "Bags have no common elements: " <> show bags
-    x : _ -> x
+    [x] -> x
+    xs -> error $ "Bags have more than one common element: " <> show xs <> " in " <> show bags
 
 part1 :: Input -> Int
 part1 = sum . map (toPriority . findShared . splitRow)
