@@ -21,11 +21,16 @@ import Text.Printf (printf)
 
 import Day01 qualified
 import Day02 qualified
+import Day03 qualified
 import Exercise (Exercise (..), Solution (..))
 import Runner (ParseResult (ParseResult), SolutionResult (..), Timing (..), readInput, runSolution)
 
 exercises :: [Exercise]
-exercises = [Day01.exercise, Day02.exercise]
+exercises =
+  [ Day01.exercise
+  , Day02.exercise
+  , Day03.exercise
+  ]
 
 data Filter = Filter
   { exerciseFilter :: Int
