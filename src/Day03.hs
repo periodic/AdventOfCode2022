@@ -2,7 +2,7 @@ module Day03 where
 
 import Data.Attoparsec.Text (Parser, endOfInput, endOfLine, letter, sepBy, skipSpace)
 import Data.Char (isLower, isUpper)
-import Data.List (foldr1, intersect)
+import Data.List (foldr1, intersect, nub)
 
 import Exercise (Exercise (..), Solution (..))
 
@@ -25,13 +25,13 @@ parser =
 
 toPriority :: Char -> Int
 toPriority x
-  | isLower x = ord x - 96 -- Remove 96 to one-index.
-  | isUpper x = ord x - 64 + 26 -- remove 64 to one-index, then add 26 for the second half.
+  | isLower x = ord x - ord 'a' + 1 -- Remove 96 to one-index.
+  | isUpper x = ord x - ord 'A' + 27 -- remove 64 to one-index, then add 26 for the second half.
   | otherwise = error $ "Got invalid bag item: " <> show x
 
 findShared :: [String] -> Char
 findShared bags =
-  case foldr1 intersect bags of
+  case nub $ foldr1 intersect bags of
     [] -> error $ "Bags have no common elements: " <> show bags
     [x] -> x
     xs -> error $ "Bags have more than one common element: " <> show xs <> " in " <> show bags
