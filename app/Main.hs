@@ -22,6 +22,7 @@ import Text.Printf (printf)
 import Day01 qualified
 import Day02 qualified
 import Day03 qualified
+import Day04 qualified
 import Exercise (Exercise (..), Solution (..))
 import Runner (ParseResult (ParseResult), SolutionResult (..), Timing (..), readInput, runSolution)
 
@@ -30,6 +31,7 @@ exercises =
   [ Day01.exercise
   , Day02.exercise
   , Day03.exercise
+  , Day04.exercise
   ]
 
 data Filter = Filter
