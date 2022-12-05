@@ -23,6 +23,7 @@ import Day01 qualified
 import Day02 qualified
 import Day03 qualified
 import Day04 qualified
+import Day05 qualified
 import Exercise (Exercise (..), Solution (..))
 import Runner (ParseResult (ParseResult), SolutionResult (..), Timing (..), readInput, runSolution)
 
@@ -32,6 +33,7 @@ exercises =
   , Day02.exercise
   , Day03.exercise
   , Day04.exercise
+  , Day05.exercise
   ]
 
 data Filter = Filter
@@ -94,7 +96,7 @@ printParseResult timing =
 
 printSolutionResult :: Text -> SolutionResult -> IO ()
 printSolutionResult solutionName SolutionResult{..} = do
-  putTextLn $ solutionName <> "\n  " <> show solutionOutput <> "\n  " <> showTiming solutionTiming
+  putTextLn $ solutionName <> "\n  " <> solutionOutput <> "\n  " <> showTiming solutionTiming
 
 showTiming :: Timing -> Text
 showTiming (SimpleTiming seconds) = toText @String $ printf "time = %0.1fμs" (seconds * 1000)

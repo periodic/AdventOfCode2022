@@ -15,7 +15,7 @@ data Timing
   | DetailedTiming Report
 
 data SolutionResult = SolutionResult
-  { solutionOutput :: Int
+  { solutionOutput :: Text
   , solutionTiming :: Timing
   }
 
@@ -26,7 +26,7 @@ data ParseResult a = ParseResult
 
 runSolution :: Bool -> a -> Solution a -> IO SolutionResult
 runSolution detailed input Solution{..} = do
-  uncurry SolutionResult <$> time detailed (pure . solutionExec) input
+  uncurry SolutionResult <$> time detailed (pure . show . solutionExec) input
 
 readInput :: Bool -> FilePath -> Parser a -> IO (ParseResult a)
 readInput detailed path parser = do

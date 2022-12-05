@@ -1,11 +1,14 @@
 module Exercise (Exercise (..), Solution (..)) where
 
-import Data.Attoparsec.Text ( Parser )
+import Data.Attoparsec.Text (Parser)
 
-data Solution a = Solution
-  { solutionName :: Text
-  , solutionExec :: a -> Int
-  }
+data Solution a where
+  Solution ::
+    Show b =>
+    { solutionName :: Text
+    , solutionExec :: a -> b
+    } ->
+    Solution a
 
 data Exercise where
   Exercise ::
