@@ -1,19 +1,19 @@
 module Day06.Windows where
 
-import qualified Data.Sequence as Seq
 import Data.List (nub)
+import Data.Text qualified as T
 
-findUniqueWindow :: Eq a => Int -> [a] -> Int
+findUniqueWindow :: Int -> Text -> Int
 findUniqueWindow n =
-  maybe (error "No subsequence found") fst . find ((== n) . length . nub . toList . snd) . zip [n..] . windows . fromList
+  maybe (error "No subsequence found") fst . find ((== n) . length . nub . toString . snd) . zip [n..] . windows
   where 
-    windows :: Seq a -> [Seq a]
+    windows :: Text -> [Text]
     windows xs
-      | length xs < n = [xs]
-      | otherwise = Seq.take n xs : windows (Seq.drop 1 xs)
+      | T.length xs < n = [xs]
+      | otherwise = T.take n xs : windows (T.drop 1 xs)
 
-part1 :: String -> Int
+part1 :: Text -> Int
 part1 = findUniqueWindow 4
 
-part2 :: String -> Int
+part2 :: Text -> Int
 part2 = findUniqueWindow 14

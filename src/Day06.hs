@@ -1,14 +1,15 @@
 module Day06 where
 
-import Data.Attoparsec.Text (Parser, endOfInput, letter, skipSpace)
+import Data.Attoparsec.Text (Parser, endOfInput, skipSpace, takeWhile1)
+import Data.Char (isLetter)
 import Data.Map qualified as Map
 import Data.Sequence (Seq (..), (|>))
 import Data.Sequence qualified as Seq
 
-import Exercise (Exercise (..), Solution (..))
 import Day06.Windows qualified as Windows
+import Exercise (Exercise (..), Solution (..))
 
-type Input = String
+type Input = Text
 
 exercise :: Exercise
 exercise =
@@ -24,7 +25,7 @@ exercise =
     }
 
 parser :: Parser Input
-parser = many letter <* skipSpace <* endOfInput
+parser = takeWhile1 (isLetter) <* skipSpace <* endOfInput
 
 data Queue a = Queue
   { contents :: Seq a
@@ -46,10 +47,10 @@ push :: Ord a => a -> Queue a -> Queue a
 push a (Queue{..}) =
   let contents' = contents |> a
       counts' = Map.alter increment a counts
-  in Queue contents' counts'
-  where
-    increment (Just n) = Just $ n + 1
-    increment Nothing = Just 1
+   in Queue contents' counts'
+ where
+  increment (Just n) = Just $ n + 1
+  increment Nothing = Just 1
 
 pop :: Ord a => Queue a -> Queue a
 pop (Queue{..}) =
@@ -57,10 +58,10 @@ pop (Queue{..}) =
     Empty -> error "Attempted to pop an empy queue"
     (a :<| contents') ->
       Queue contents' $ Map.update decrement a counts
-  where
-    decrement n 
-      | n > 1 = Just (n - 1)
-      | otherwise = Nothing
+ where
+  decrement n
+    | n > 1 = Just (n - 1)
+    | otherwise = Nothing
 
 findUniqueSubstr :: (Eq a, Ord a) => Int -> [a] -> Int
 findUniqueSubstr len =
@@ -73,7 +74,7 @@ findUniqueSubstr len =
   findSubstr _ _ [] = error "Reached end of input"
 
 part1 :: Input -> Int
-part1 = findUniqueSubstr 4
+part1 = findUniqueSubstr 4 . toString
 
 part2 :: Input -> Int
-part2 = findUniqueSubstr 14
+part2 = findUniqueSubstr 14 . toString
