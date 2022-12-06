@@ -6,6 +6,7 @@ import Data.Sequence (Seq (..), (|>))
 import Data.Sequence qualified as Seq
 
 import Exercise (Exercise (..), Solution (..))
+import Day06.Windows qualified as Windows
 
 type Input = String
 
@@ -16,7 +17,9 @@ exercise =
     , exerciseParser = parser
     , exerciseSolutions =
         [ Solution "Part 1" part1
+        , Solution "Part 1 - Windows" Windows.part1
         , Solution "Part 2" part2
+        , Solution "Part 2 - Windows" Windows.part2
         ]
     }
 
