@@ -12,7 +12,7 @@ extra-doc-files: CHANGELOG.md
 
 -- extra-source-files:
 
-common warnings
+common lang
   ghc-options:        -Wall
   mixins:
     base hiding (Prelude),
@@ -33,12 +33,13 @@ common warnings
     NamedFieldPuns
     OverloadedStrings
     PatternSynonyms
+    QuasiQuotes
     RecordWildCards
     StandaloneDeriving
     TypeApplications
 
 library
-  import:           warnings
+  import:           lang
   exposed-modules:
     Day01
     Day02
@@ -47,6 +48,7 @@ library
     Day05
     Day06
     Day06.Windows
+    Day07
     Exercise
 
   other-modules:
@@ -65,7 +67,7 @@ library
   default-language: Haskell2010
 
 executable AdventOfCode2022
-  import:           warnings
+  import:           lang
   main-is:          Main.hs
   other-modules:
     Common
@@ -76,8 +78,29 @@ executable AdventOfCode2022
     , attoparsec            ^>=0.14.4
     , base                  ^>=4.16.3.0
     , criterion             ^>=1.6.0.0
-    , statistics ^>= 0.16.1.0
     , optparse-applicative  ^>=0.17.0.0
+    , statistics            ^>=0.16.1.0
 
   hs-source-dirs:   app
   default-language: Haskell2010
+
+test-suite tests
+  import:             lang
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  other-modules:
+    Day01Spec
+    Day07Spec
+
+  build-depends:
+    , AdventOfCode2022
+    , attoparsec          ^>=0.14.4
+    , base                ^>=4.16.3.0
+    , hspec               ^>=2.10.6
+    , hspec-contrib       ^>=0.5.1.1
+    , neat-interpolation  ^>=0.5.1.3
+    , QuickCheck          ^>=2.14.2
+
+  hs-source-dirs:     tests
+  default-language:   Haskell2010
+  build-tool-depends: hspec-discover:hspec-discover ^>=2.10.6

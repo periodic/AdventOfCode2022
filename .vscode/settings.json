@@ -1,6 +1,9 @@
 {
     "cSpell.words": [
+        "Attoparsec",
         "mempty",
         "metavar"
-    ]
+    ],
+    "haskell.formattingProvider": "fourmolu",
+    "editor.tabSize": 2
 }
