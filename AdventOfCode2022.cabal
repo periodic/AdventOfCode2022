@@ -52,6 +52,7 @@ library
     Day07
     Day08
     Day08.Map
+    Day09
     Exercise
 
   other-modules:
@@ -64,6 +65,8 @@ library
     , attoparsec  ^>=0.14.4
     , base        ^>=4.16.3.0
     , containers  ^>=0.6.5.1
+    , linear      ^>=1.21.10
+    , mtl         ^>=2.2.2
     , vector
 
   hs-source-dirs:   src
@@ -95,6 +98,7 @@ test-suite tests
     Day01Spec
     Day07Spec
     Day08Spec
+    Day09Spec
 
   build-depends:
     , AdventOfCode2022
