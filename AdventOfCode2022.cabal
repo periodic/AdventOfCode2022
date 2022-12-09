@@ -36,6 +36,7 @@ common lang
     QuasiQuotes
     RecordWildCards
     StandaloneDeriving
+    TupleSections
     TypeApplications
 
 library
@@ -49,6 +50,8 @@ library
     Day06
     Day06.Windows
     Day07
+    Day08
+    Day08.Map
     Exercise
 
   other-modules:
@@ -91,6 +94,7 @@ test-suite tests
   other-modules:
     Day01Spec
     Day07Spec
+    Day08Spec
 
   build-depends:
     , AdventOfCode2022
