@@ -68,13 +68,11 @@ pullRope front back = do
     -- Move the next knot
     (next : rest) ->
       let dp@(V2 dx dy) = front - next
-      in
-        if abs dx <= 1 && abs dy <= 1
-          -- Abort if this isn't moving.
-          then front : back
-          else
-            -- Move and propagate.
-            front : pullRope (next + signum dp) rest
+       in if abs dx <= 1 && abs dy <= 1
+            then -- Abort if this isn't moving.
+              front : back
+            else -- Move and propagate.
+              front : pullRope (next + signum dp) rest
 
 origin :: V2 Int
 origin = V2 0 0
