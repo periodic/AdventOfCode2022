@@ -5,8 +5,6 @@ import Data.Attoparsec.Text (Parser, char, decimal, endOfInput, endOfLine, sepBy
 import Data.Set qualified as Set
 import Linear.V2 (V2 (..))
 
-import Data.List.NonEmpty ((<|))
-import Data.List.NonEmpty qualified as NE
 import Exercise (Exercise (..), Solution (..))
 
 exercise :: Exercise
@@ -41,12 +39,9 @@ parser =
 
 type Coord = V2 Int
 
-type Rope = NonEmpty Coord
+type Rope = [Coord]
 
-newtype SimState = SimState Rope
-  deriving (Show)
-
-type Sim = WriterT (Set Coord) (State SimState)
+type Sim = WriterT (Set Coord) (State Rope)
 
 runInstruction :: Instruction -> Sim ()
 runInstruction (R n) = void . replicateM n . move $ V2 1 0
@@ -56,34 +51,37 @@ runInstruction (D n) = void . replicateM n . move $ V2 0 (-1)
 
 move :: Coord -> Sim ()
 move dir = do
-  SimState (front :| rest) <- get
-  let rope' = pullRope $ (front + dir) :| rest
-      end :| _ = NE.reverse rope'
-  tell $ Set.singleton end
-  put $ SimState rope'
+  rope <- get
+  case rope of
+    [] -> error "The rope is empty"
+    (front : rest) -> do
+      let rope' = pullRope (front + dir) rest
+          end : _ = reverse rope'
+      tell $ Set.singleton end
+      put rope'
 
-pullRope :: Rope -> Rope
-pullRope (front :| back) = do
+pullRope :: Coord -> Rope -> Rope
+pullRope front back = do
   case back of
     -- Nothing to pull on.
-    [] -> NE.singleton front
+    [] -> [front]
     -- Move the next knot
     (next : rest) ->
       let dp@(V2 dx dy) = front - next
       in
         if abs dx <= 1 && abs dy <= 1
           -- Abort if this isn't moving.
-          then front :| back
+          then front : back
           else
             -- Move and propagate.
-            front <| pullRope (next + signum dp :| rest)
+            front : pullRope (next + signum dp) rest
 
 origin :: V2 Int
 origin = V2 0 0
 
-runSim :: Rope -> Input -> (Set Coord, SimState)
+runSim :: Rope -> Input -> (Set Coord, Rope)
 runSim rope =
-  usingState (SimState rope) . execWriterT . addStart . mapM runInstruction
+  usingState rope . execWriterT . addStart . mapM runInstruction
  where
   addStart = (>> tell (Set.singleton origin))
 
