@@ -29,6 +29,7 @@ import Day07 qualified
 import Day08 qualified
 import Day09 qualified
 import Day10 qualified
+import Day11 qualified
 import Exercise (Exercise (..), Solution (..))
 import Runner (ParseResult (ParseResult), SolutionResult (..), Timing (..), readInput, runSolution)
 
@@ -44,6 +45,7 @@ exercises =
   , Day08.exercise
   , Day09.exercise
   , Day10.exercise
+  , Day11.exercise
   ]
 
 data Filter = Filter
