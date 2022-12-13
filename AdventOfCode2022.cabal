@@ -55,6 +55,7 @@ library
     Day09
     Day10
     Day11
+    Day12
     Exercise
 
   other-modules:
@@ -70,6 +71,7 @@ library
     , linear      ^>=1.21.10
     , mtl         ^>=2.2.2
     , vector
+    , pqueue
 
   hs-source-dirs:   src
   default-language: Haskell2010
@@ -103,6 +105,7 @@ test-suite tests
     Day09Spec
     Day10Spec
     Day11Spec
+    Day12Spec
 
   build-depends:
     , AdventOfCode2022
