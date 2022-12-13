@@ -39,7 +39,6 @@ spec = do
 
   describe "Part 1" $ do
     it "handles the example input" $ do
-      findPath exampleInput `shouldBe` [(1, 2), (2, 2), (2, 3), (2, 4), (3, 4), (3, 5), (4, 5), (5, 5), (6, 5), (7, 5), (8, 5), (8, 4), (8, 3), (8, 2), (8, 1), (7, 1), (6, 1), (5, 1), (4, 1), (4, 2), (4, 3), (4, 4), (5, 4), (6, 4), (7, 4), (7, 3), (7, 2), (6, 2), (5, 2), (5, 3), (6, 3)]
       part1 exampleInput `shouldBe` 31
 
   describe "Part 2" $ do
