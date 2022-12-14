@@ -1,11 +1,11 @@
 module Day12Spec where
 
+import Data.Attoparsec.Text (parseOnly)
+import Data.Map.Strict qualified as Map
+import NeatInterpolation (text)
 import Test.Hspec (Spec, describe, it, shouldBe)
 
-import Data.Attoparsec.Text (parseOnly)
-import qualified Data.Map.Strict as Map
 import Day12
-import NeatInterpolation (text)
 
 exampleText :: Text
 exampleText =

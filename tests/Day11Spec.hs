@@ -1,13 +1,14 @@
 module Day11Spec where
 
+import Data.Attoparsec.Text (parseOnly)
 import Data.IntMap qualified as IntMap
 import Data.Sequence qualified as Seq
 import NeatInterpolation (text)
 import Test.Hspec (Spec, describe, it, shouldBe)
 
-import Data.Attoparsec.Text (parseOnly)
 import Day11
 
+exampleText :: Text
 exampleText =
   [text|
   Monkey 0:
