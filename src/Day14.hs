@@ -3,7 +3,7 @@ module Day14 where
 import Data.Attoparsec.Text (Parser, char, decimal, endOfInput, endOfLine, sepBy, skipSpace, string)
 import Data.Ix (Ix (range))
 import Data.List qualified as List
-import Data.Map.Strict qualified as Map
+import Data.HashMap.Strict qualified as Map
 import Exercise (Exercise (..), Solution (..))
 import Linear (V2 (..))
 
@@ -33,7 +33,7 @@ data Cell
   | Sand
   deriving (Show, Eq, Ord)
 
-type RockMap = Map Coord Cell
+type RockMap = Map.HashMap Coord Cell
 
 inputToRockMap :: Input -> RockMap
 inputToRockMap =

@@ -4,7 +4,7 @@ import Data.Attoparsec.Text (parseOnly)
 import Linear (V2 (..))
 import NeatInterpolation (text)
 import Test.Hspec (Spec, describe, it, shouldBe)
-import qualified Data.Map.Strict as Map
+import qualified Data.HashMap.Strict as Map
 
 import Day14
 
