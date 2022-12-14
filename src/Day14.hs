@@ -3,7 +3,7 @@ module Day14 where
 import Data.Attoparsec.Text (Parser, char, decimal, endOfInput, endOfLine, sepBy, skipSpace, string)
 import Data.Ix (Ix (range))
 import Data.List qualified as List
-import Data.HashMap.Strict qualified as Map
+import Data.HashSet qualified as Set
 import Exercise (Exercise (..), Solution (..))
 import Linear (V2 (..))
 
@@ -28,20 +28,15 @@ parser =
  where
   coord = V2 <$> decimal <* char ',' <*> decimal
 
-data Cell
-  = Rock
-  | Sand
-  deriving (Show, Eq, Ord)
-
-type RockMap = Map.HashMap Coord Cell
+type RockMap = Set.HashSet Coord
 
 inputToRockMap :: Input -> RockMap
 inputToRockMap =
-  foldr makeRocks Map.empty
+  foldr makeRocks Set.empty
  where
   makeRocks (c1 : c2 : rest) rockMap =
     let cs = if c1 < c2 then range (c1, c2) else range (c2, c1)
-        rockMap' = foldr (`Map.insert` Rock) rockMap cs
+        rockMap' = foldr Set.insert rockMap cs
      in makeRocks (c2 : rest) rockMap'
   makeRocks _ rockMap = rockMap
 
@@ -55,18 +50,18 @@ data SandResult
   | FallDownLeft
   | FallDownRight
 
-type SandBehavior = Coord -> Maybe Cell -> Maybe Cell -> Maybe Cell -> SandResult
+type SandBehavior = Coord -> Bool -> Bool -> Bool -> SandResult
 
 dropSand :: SandBehavior -> RockMap -> Maybe RockMap
 dropSand behavior rockMap = do
   sandLoc <- execSand (V2 500 0)
-  pure $ Map.insert sandLoc Sand rockMap
+  pure $ Set.insert sandLoc rockMap
  where
   execSand coord =
     let down = coord + V2 0 1
         downLeft = coord + V2 (-1) 1
         downRight = coord + V2 1 1
-     in case behavior coord (Map.lookup down rockMap) (Map.lookup downLeft rockMap) (Map.lookup downRight rockMap) of
+     in case behavior coord (Set.member down rockMap) (Set.member downLeft rockMap) (Set.member downRight rockMap) of
           FallDown -> execSand down
           FallDownLeft -> execSand downLeft
           FallDownRight -> execSand downRight
@@ -89,9 +84,9 @@ part1 input =
     if getY coord >= maxY
       then Done
       else case (down, downLeft, downRight) of
-        (Nothing, _, _) -> FallDown
-        (_, Nothing, _) -> FallDownLeft
-        (_, _, Nothing) -> FallDownRight
+        (False, _, _) -> FallDown
+        (_, False, _) -> FallDownLeft
+        (_, _, False) -> FallDownRight
         _ -> Next
 
 part2 :: Input -> Int
@@ -104,9 +99,9 @@ part2 input =
     if getY coord == maxY + 1
       then Next
       else case (down, downLeft, downRight) of
-        (Nothing, _, _) -> FallDown
-        (_, Nothing, _) -> FallDownLeft
-        (_, _, Nothing) -> FallDownRight
+        (False, _, _) -> FallDown
+        (_, False, _) -> FallDownLeft
+        (_, _, False) -> FallDownRight
         _ ->
           if coord == V2 500 0
             then Done
