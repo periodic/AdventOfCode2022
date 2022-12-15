@@ -58,6 +58,7 @@ library
     Day12
     Day13
     Day14
+    Day15
     Exercise
 
   other-modules:
@@ -110,6 +111,7 @@ test-suite tests
     Day12Spec
     Day13Spec
     Day14Spec
+    Day15Spec
 
   build-depends:
     , AdventOfCode2022
